@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -63,6 +67,50 @@ func deleteDocument(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
+func upload(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	d := docs[id]
+	if d == nil {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+
+	// Read form field
+	name := c.FormValue("name")
+	docType := c.FormValue("type")
+	creationDate := time.Now().String()
+
+	// update metadata
+	d.Type = docType
+	d.CreationDate = creationDate
+
+	// Read file
+
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		return err
+	}
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	// Destination
+	dst, err := os.Create(file.Filename)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	// Copy
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+	return c.JSONPretty(http.StatusOK, fmt.Sprintf("File %s is uploaded successfully with fields name=%s and email=%s.", file.Filename, name), " ")
+}
+
 func main() {
 	e := echo.New()
 
@@ -72,8 +120,9 @@ func main() {
 
 	// Routes
 	e.GET("/docs", getAllDocuments)
-	e.POST("/docs", createDocument)
 	e.GET("/docs/:id", getDocument)
+	e.POST("/docs/new", createDocument)
+	e.POST("/docs/:id/upload", upload)
 	e.PUT("/docs/:id", updateDocument)
 	e.DELETE("/docs/:id", deleteDocument)
 
