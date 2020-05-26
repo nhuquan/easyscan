@@ -20,9 +20,9 @@ type Repo interface {
 var dbEngine = "sqlite3"
 var dbPath = "./easyscan_2020_05.db"
 
-type Doc struct{}
+type DocRepo struct{}
 
-func (d Doc) GetOne(id string) (interface{}, error) {
+func (d DocRepo) GetOne(id string) (interface{}, error) {
 	db, err := sql.Open(dbEngine, dbPath)
 	if err != nil {
 		return nil, err
@@ -58,11 +58,11 @@ func (d Doc) GetOne(id string) (interface{}, error) {
 	return dd, nil
 }
 
-func (d Doc) GetAll() (interface{}, error) {
+func (d DocRepo) GetAll() (interface{}, error) {
 	return nil, nil
 }
 
-func (d Doc) AddOne(item interface{}) (interface{}, error) {
+func (d DocRepo) AddOne(item interface{}) (interface{}, error) {
 	// Check if the item is of type Document
 	dd, ok := item.(*domain.Document)
 	if !ok {
@@ -87,7 +87,7 @@ func (d Doc) AddOne(item interface{}) (interface{}, error) {
 	return dd, nil
 }
 
-func (d Doc) Update(id string, item interface{}) (interface{}, error) {
+func (d DocRepo) Update(id string, item interface{}) (interface{}, error) {
 	return nil, nil
 }
 

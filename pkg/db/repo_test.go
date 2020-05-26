@@ -10,7 +10,18 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestGetOne(t *testing.T) {
-	t.Fatal("not implemented")
+	docRepo := &DocRepo{}
+	i, err := docRepo.GetOne("1")
+	if err != nil {
+		t.Errorf("failed")
+	}
+	doc, ok := i.(*domain.Document)
+	if !ok {
+		t.Errorf("failed")
+	}
+	if doc.ID == 0 {
+		t.Errorf("failed")
+	}
 }
 
 func TestAddOne(t *testing.T) {
@@ -20,7 +31,7 @@ func TestAddOne(t *testing.T) {
 		CreationDate: "2020",
 	}
 
-	docRepo := &Doc{}
+	docRepo := &DocRepo{}
 
 	i, err := docRepo.AddOne(doc)
 
