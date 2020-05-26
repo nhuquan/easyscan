@@ -4,11 +4,25 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/labstack/gommon/log"
+	"strconv"
+	"time"
 	_ "time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"misoda.fr/easyscan/pkg/domain"
 )
+
+var dbEngine = "sqlite3"
+var dbPath = "./easyscan_2020_05.db"
+
+func init() {
+	var currentMonth string
+	log.Info("Initializing database repositories")
+	currentMonth = strconv.Itoa(time.Now().Year()) + "_" + time.Now().Month().String()
+	log.Info("Current date is: %s", currentMonth)
+	// TODO check if database file is exist for current month, if not create it:
+}
 
 type Repo interface {
 	GetOne(id string) (interface{}, error)
@@ -16,9 +30,6 @@ type Repo interface {
 	AddOne(item interface{}) (interface{}, error)
 	Update(id string, item interface{}) (interface{}, error)
 }
-
-var dbEngine = "sqlite3"
-var dbPath = "./easyscan_2020_05.db"
 
 type DocRepo struct{}
 
